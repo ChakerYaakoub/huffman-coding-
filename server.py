@@ -5,10 +5,9 @@ import threading
 from huffmanCode.huffman import HuffmanCoding
 import json
 
-from DataFc.createData import create_database_if_not_exists
+from DataBase.createData import create_database_if_not_exists
 import sqlite3  
 
-# from huffman.huffman import HuffmanCoding
 
 app = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -41,7 +40,7 @@ class Thread(threading.Thread):
 
                  filename_with_extension = self.client.recv(1024).decode('utf-8')
                  filename, extension = os.path.splitext(filename_with_extension)
-                #  print(f"Receiving file: {filename}") 
+                 print(f"Receiving file: {filename}") 
                  # Send a signal to the client to indicate that the server is ready to receive the file content
                  self.client.send('2'.encode())
                 
@@ -58,7 +57,7 @@ class Thread(threading.Thread):
                 #  print(received_bytes)
 
                  project_root = os.getcwd()  # Get the current working directory
-                #  file_path = os.path.join(project_root, 'files', filename+'.bin')
+
                  if not os.path.exists(os.path.join(project_root, 'files', f"{filename}.bin")):
                      file_path = os.path.join(project_root, 'files', f"{filename}.bin") 
                  else:
@@ -70,7 +69,7 @@ class Thread(threading.Thread):
                               break
                          counter += 1
                          
-                    print(received_bytes)
+                    # print(received_bytes)
                     # received_string = received_bytes.decode('utf-8')
 
                           
@@ -85,27 +84,31 @@ class Thread(threading.Thread):
                 
                  file_size = os.path.getsize(file_path)
                  
+
+                 
               
                 
-                #  reverse_mapping_json = json.dumps(reverse_mapping)
-                 reverse_mapping_str = str(reverse_mapping) 
-                 print("\tReverse mapping: ", reverse_mapping_str)
+                 reverse_mapping_json = json.dumps(reverse_mapping)
+                #  print("Reverse mapping JSON:", reverse_mapping_json)
+                #  reverse_mapping_str = str(reverse_mapping) 
+                #  print("\tReverse mapping: ", reverse_mapping_str)
                 
                 # Insert data into the database
-                 conn = sqlite3.connect('files_database.db')
+                 conn = sqlite3.connect('./DataBase/files_database.db')
                  cursor = conn.cursor()
                  cursor.execute('''INSERT INTO Fichiers (original_filename, path, reverse_mapping)
-                                  VALUES (?, ?, ?)''', (filename,  str(file_path), reverse_mapping_str))
+                                  VALUES (?, ?, ?)''', (filename,  str(file_path), reverse_mapping_json))
                  conn.commit()
                  conn.close()
                 
                     
                 
 
-                 print(f"File saved successfully.  File size: {file_size} bytes")
+                 print(f"File saved successfully.  File size after compress: {file_size} bytes")
             
             elif action == "2":
                 # Chemin du répertoire à lire
+                # print("2. Lister les fichiers")
                 project_root = os.getcwd() 
                 directory = Path(project_root + '/files')
 
@@ -117,6 +120,7 @@ class Thread(threading.Thread):
                         self.client.send(f'{fileSize}|{filename}'.encode())
                 
                 self.client.send(f'0|fini'.encode())
+                # print("Liste des fichiers envoyée au client avec succès")
                         
             
                 
@@ -128,13 +132,14 @@ class Thread(threading.Thread):
              filename_with_extension = self.client.recv(1024).decode('utf-8')
              filename, extension = os.path.splitext(filename_with_extension)
 
-             print(f"Receiving file: {filename}")
+             print(f" file name: {filename}")
     
               # Get the file path and reverse_mapping from the database
-             conn = sqlite3.connect('files_database.db')
+             conn = sqlite3.connect('./DataBase/files_database.db')
              cursor = conn.cursor()
              cursor.execute("SELECT path, reverse_mapping FROM Fichiers WHERE original_filename = ?", (filename,))
              result = cursor.fetchone()
+             print("get the file info from the database")
             #  print(result)
              file_path = result[0]
              reverse_mapping = result[1] 
@@ -149,11 +154,12 @@ class Thread(threading.Thread):
     
              # Send the file content to the client
              with open(file_path, 'rb') as file:
+                 print("Sending file content to the client .. ")
 
                  file_content = file.read()
-                 print(file_content)
+                #  print(file_content)
                  file_size = len(file_content)
-                 print("the original file size is: " , file_size , "bytes")
+                #  print("the original file size is: " , file_size , "bytes")
                 
                  self.client.sendall(str(file_size).encode())
                  
@@ -167,15 +173,12 @@ class Thread(threading.Thread):
             #  reverse_mapping_json = json.dumps(reverse_mapping)
             #  print("\tReverse mapping: ", reverse_mapping)
              if self.client.recv(2).decode('utf-8') == "ok":
-                reverse_mapping_json = json.dumps(reverse_mapping)
-                print("\tReverse mapping: ", reverse_mapping)
+                # reverse_mapping_json = json.dumps(reverse_mapping)
+                # print("\tReverse mapping: ", reverse_mapping)
                 self.client.sendall(reverse_mapping.encode())
+                print(" All File info sent to client in successfully")
 
-             
-            #  test=  self.client.recv(1024).decode('utf-8')
-            #  if test == "haveAFile":
-            #     self.client.send('ok'.encode())
-            #     self.client.sendall(reverse_mapping.encode())
+
              
        
     

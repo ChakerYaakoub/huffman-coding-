@@ -1,6 +1,11 @@
 from huffman import HuffmanCoding
 import sys
 
+# just for test  
+# just for test  
+# just for test  
+
+
 path = "sample.txt"
 
 h = HuffmanCoding()
