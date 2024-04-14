@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,
+								initial-scale=1.0">
+		<title>Files List</title>
+		<!-- Include Tailwind CSS -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+			rel="stylesheet">
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<style>
+		.completed {
+			text-decoration: line-through;
+		}
+	</style>
+	</head>
+
+	<body class="bg-gray-100">
+
+		<div class="container mx-auto my-10">
+			<h1 class="text-center text-3xl font-semibold mb-4">
+				Files List
+			</h1>
+			<div class="md:w-1/2 mx-auto">
+				<div class="bg-white shadow-md rounded-lg p-6">
+					<form id="todo-form">
+						<div class="flex mb-4">
+							<label for="file-button"
+								class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer">
+								Add File
+							</label>
+							<input type="file" id="file-button" class="hidden">
+						</div>
+
+					</form>
+					<ul id="file-list" class="divide-y divide-gray-200">
+						<!-- File names will be added here dynamically -->
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<script>
+
+		const fileButton = document.getElementById("file-button");
+
+fileButton.addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        await axios.post('http://127.0.0.1:8000/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log('File uploaded successfully');
+        fetchFiles(); // Refresh the file list after uploading
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    }
+});
+
+
+
+const downFile = (filename) => {
+    console.log("Downloading file: " + filename);
+
+    // Send a fetch request to the server to download the file
+    fetch('http://127.0.0.1:8000/downFile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: filename })
+    })
+	.then(response => {
+		if (!response.ok) {
+		  throw new Error('Network response was not ok');
+		}
+		return response.blob();
+	  })
+	  .then(blob => {
+		// Create a temporary link element
+		const url = window.URL.createObjectURL(new Blob([blob]));
+		const link = document.createElement('a');
+		link.href = url;
+		
+		// Set the filename for the downloaded file
+		link.setAttribute('download', `${filename.split('.')[0]}.txt`);
+		
+		// Append the link to the body
+		document.body.appendChild(link);
+		
+		// Trigger the download
+		link.click();
+		
+		// Cleanup
+		link.parentNode.removeChild(link);
+	  })
+	  .catch(error => {
+		console.error('There was a problem with your fetch operation:', error);
+	  });}
+
+
+
+	
+	
+
+	
+
+	
+
+
+			
+		
+		
+		async function fetchFiles() {
+
+			const fileList = document.getElementById("file-list");
+			fileList.innerHTML = ""; // Clear previous content
+
+			try {
+				const response = await axios.get('http://127.0.0.1:8000/getFiles');
+				// console.log('Files:', response.data);
+
+				const files = response.data;
+				files.forEach(filename => {
+					const li = document.createElement("li");
+					li.className = "py-2 flex justify-between items-center"; // Using flexbox to align items
+					li.innerHTML = `
+						<span>${filename}</span>
+						<button onClick="downFile('${filename}')" class="text-blue-500 hover:text-blue-700 edit-btn">Download</button>
+					`;
+					fileList.appendChild(li);
+				});
+				
+			} catch (error) {
+				console.error('Error fetching files:', error);
+			}
+		}
+
+	</script>
+
+		<script>
+		window.addEventListener('DOMContentLoaded', fetchFiles);
+
+	</script>
+	</body>
+
+</html>
