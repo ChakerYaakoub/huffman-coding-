@@ -3,9 +3,10 @@ import sqlite3
 
 def create_database_if_not_exists():
     # Check if the database file exists
-    if not os.path.exists('files_database.db'):
+    if not os.path.exists('./DataBase/files_database.db'):
+        
         # If the database file does not exist, create it
-        conn = sqlite3.connect('files_database.db')
+        conn = sqlite3.connect('./DataBase/files_database.db')
         cursor = conn.cursor()
         
         # Create the necessary tables
@@ -14,7 +15,7 @@ def create_database_if_not_exists():
                             original_filename TEXT,
 
                             path TEXT,
-                            reverse_mapping blob
+                            reverse_mapping TEXT
                         )''')
         
         # Commit changes and close connection
