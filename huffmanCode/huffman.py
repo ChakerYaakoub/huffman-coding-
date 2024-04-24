@@ -1,10 +1,7 @@
 import heapq
 import os
 
-"""
-author: Bhrigu Srivastava
-website: https:bhrigu.me
-"""
+
 
 class HuffmanCoding:
 	def __init__(self):
