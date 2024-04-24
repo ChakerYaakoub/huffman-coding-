@@ -1,5 +1,6 @@
 import heapq
 import os
+
 class HuffmanCoding:
 	def __init__(self):
 		
