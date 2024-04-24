@@ -4,8 +4,6 @@ This project implements a client-server architecture using TCP/IP communication 
 
 ## Installation
 
-Save the `requirements.txt` file in the root directory of your project.
-
 Open your terminal or command prompt.
 
 Navigate to the root directory of your project.
@@ -17,7 +15,7 @@ pip install -r requirements.txt
 ```
 
 
-## Running the Server
+## Running the Server : terminal 1
 
 To start the server, run the following command:
 ```bash
@@ -26,7 +24,7 @@ python server.py
 
 
 
-## Running the Client
+## Running the Client : terminal 2
 
 To start the client interface, run the following command:
 
@@ -49,6 +47,7 @@ To access the client interface, open the `index.html` file in your web browser. 
 - `./huffmanCode/huffman.py`: Python script containing the Huffman coding algorithm implementation.
 - `index.html`: HTML file for the client interface.
 - `DataBase`: Folder containing scripts to create database.
+- `files`: Folder containing all the compressed files '.bin'.
 
 
 
