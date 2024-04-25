@@ -15,6 +15,8 @@ app.bind(("127.0.0.1", 1700))
 
 app.listen()
 
+
+# Create a thread class to handle multiple clients
 create_database_if_not_exists()
 class Thread(threading.Thread):
     def __init__(self, client):
@@ -31,7 +33,8 @@ class Thread(threading.Thread):
             h = HuffmanCoding()
 
             
-            #Action pour enregistrer un fichier
+            #Action pour enregistrer un fichier : action 1 
+            ##############################################
             if action == "1":
 
                  print("1. Enregistrer un fichier")
@@ -89,9 +92,7 @@ class Thread(threading.Thread):
               
                 
                  reverse_mapping_json = json.dumps(reverse_mapping)
-                #  print("Reverse mapping JSON:", reverse_mapping_json)
-                #  reverse_mapping_str = str(reverse_mapping) 
-                #  print("\tReverse mapping: ", reverse_mapping_str)
+
                 
                 # Insert data into the database
                  conn = sqlite3.connect('./DataBase/files_database.db')
@@ -105,10 +106,13 @@ class Thread(threading.Thread):
                 
 
                  print(f"File saved successfully.  File size after compress: {file_size} bytes")
-            
+                 
+            # envoie la liste des fichiers action 2
+            #######################################
             elif action == "2":
+                
                 # Chemin du répertoire à lire
-                # print("2. Lister les fichiers")
+           
                 project_root = os.getcwd() 
                 directory = Path(project_root + '/files')
 
@@ -124,7 +128,8 @@ class Thread(threading.Thread):
                         
             
                 
-            #Action pour télécharger un fichier
+            #Action pour télécharger un fichier : action 3
+            ##############################################
             elif action == "3":
              print("3. Télécharger un fichier")
     
@@ -145,8 +150,7 @@ class Thread(threading.Thread):
              reverse_mapping = result[1] 
              conn.close()
              
-            #  print("File path: ", file_path)
-            #  print("Reverse mapping: ", reverse_mapping)
+
              
          
              
@@ -170,11 +174,9 @@ class Thread(threading.Thread):
              
              # Send the reverse_mapping to the client
              
-            #  reverse_mapping_json = json.dumps(reverse_mapping)
-            #  print("\tReverse mapping: ", reverse_mapping)
+ 
              if self.client.recv(2).decode('utf-8') == "ok":
-                # reverse_mapping_json = json.dumps(reverse_mapping)
-                # print("\tReverse mapping: ", reverse_mapping)
+   
                 self.client.sendall(reverse_mapping.encode())
                 print(" All File info sent to client in successfully")
 
@@ -188,7 +190,8 @@ class Thread(threading.Thread):
 
                 
                 
-            #Action pour fermer la connexion
+            #Action pour fermer la connexion : action 4
+            ###########################################
             elif action == "4":
                 self.client.close()
                 break;

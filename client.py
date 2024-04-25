@@ -31,6 +31,13 @@ fastAPI.add_middleware(
     allow_headers=["*"],
 )
 
+##########################################################
+##########################################################
+##########################################################
+
+
+# upload a file to the server
+
 @fastAPI.post("/upload")
 async def upload(file: UploadFile = File(...)):    
     try:
@@ -68,7 +75,9 @@ async def upload(file: UploadFile = File(...)):
 ##########################################################
 ##########################################################
 ##########################################################
+
 # get all the files in the directory 
+
 def getFile(app):
     size = ""
     
@@ -129,7 +138,6 @@ async def downFile(filename_request: FilenameRequest):
 
     # Receive the size of the file content
     file_size = int(app.recv(1024).decode('utf-8'))
-    # print("the original file size is: " , file_size , "bytes")
         
     # Send acknowledgment back to the server
         
@@ -143,7 +151,6 @@ async def downFile(filename_request: FilenameRequest):
     
 
         
-    # print('received_file_content: ', received_file_content)
     
     app.send('ok'.encode())
 
@@ -153,21 +160,16 @@ async def downFile(filename_request: FilenameRequest):
 
     reverse_mapping_json =   app.recv(1024).decode('utf-8')
     print('All information of the file from the server has been received successfully.')
-    # print("Reverse mapping JSON:", reverse_mapping_json)
 
-# Try to replace single quotes with double quotes
-    # reverse_mapping_json = reverse_mapping_json.replace("'", '"')
-    # reverse_mapping_json = reverse_mapping_json.replace('"""', '\\"\\"\\"')
-    # print("Modified reverse mapping JSON:", reverse_mapping_json)
+
 
 # Load the JSON string
     reverse_mapping = None
     try:
      reverse_mapping = json.loads(reverse_mapping_json)
-    #  print("Reverse mapping:", reverse_mapping)
+
     except json.JSONDecodeError as e:
      print("Error decoding JSON:", e)
-    # print("Reverse mapping 1:", type(reverse_mapping_dist) )
 
   
 
@@ -177,8 +179,6 @@ async def downFile(filename_request: FilenameRequest):
         if decompressed_text != None:
              print("Decompressed file text successfully") 
            
-        # print("Decompressed file : " + decompressed_text)
-        # return a file . txt 
     # Convert decompressed text to bytes
     
         decompressed_bytes = decompressed_text.encode("utf-8")
@@ -190,9 +190,8 @@ async def downFile(filename_request: FilenameRequest):
 
         
         # Return the file as a streaming response
-        # StreamingResponse in FastAPI doesn't save the file on the server; instead, it sends the file content directly to the client as a stream.
+        # StreamingResponse in FastAPI doesn't save a file ; instead, it sends the file content directly to the client as a stream.
         app.send('4'.encode())
-        # print(" Fermer la connexion")
         
 
         return StreamingResponse(file_stream, media_type="text/plain",
